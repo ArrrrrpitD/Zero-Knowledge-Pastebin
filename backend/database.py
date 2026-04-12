@@ -9,6 +9,11 @@ if settings.DEV_MODE:
     _connect_args = {"check_same_thread": False}
 else:
     _db_url = settings.DATABASE_URL
+    # Railway passes standard "postgresql://" URLs, but our async setup requires "+asyncpg"
+    if _db_url.startswith("postgres://"):
+        _db_url = _db_url.replace("postgres://", "postgresql+asyncpg://", 1)
+    elif _db_url.startswith("postgresql://"):
+        _db_url = _db_url.replace("postgresql://", "postgresql+asyncpg://", 1)
     _connect_args = {}
 
 engine = create_async_engine(

@@ -56,7 +56,7 @@ URL: https://zeropaste.example.com/paste/{id}#key={base64_aes_key}
 ```bash
 # Clone the repo
 git clone https://github.com/ArrrrrpitD/Zero-Knowledge-Pastebin.git
-cd zeropaste
+cd Zero-Knowledge-Pastebin
 
 # Start infrastructure (PostgreSQL + Redis + FastAPI backend)
 docker compose up -d
@@ -71,13 +71,13 @@ Then open [http://localhost:5173](http://localhost:5173).
 
 ---
 
-## 🛠️ Local Development (without Docker)
+## 🛠️ Local Development (Standalone Dev Mode)
+
+Don't want to run Docker or install PostgreSQL and Redis? You can run the backend in a fully self-contained **Dev Mode** using SQLite and an in-memory Redis mock (`fakeredis`).
 
 ### Prerequisites
 - Python 3.12+
 - Node.js 20+
-- PostgreSQL 16
-- Redis 7
 
 ### Backend
 ```bash
@@ -85,14 +85,18 @@ cd backend
 
 # Create a virtual environment
 python -m venv .venv
-source .venv/bin/activate  # Windows: .venv\Scripts\activate
 
-# Install dependencies
+# Activate it (Windows):
+.venv\Scripts\activate
+# Activate it (macOS/Linux):
+# source .venv/bin/activate
+
+# Install dependencies (including SQLite and FakeRedis)
 pip install -r requirements.txt
+pip install aiosqlite fakeredis
 
-# Copy and configure environment
-cp ../.env.example .env
-# Edit .env if your DB/Redis are on different ports
+# Create environment file and enable dev mode
+echo "DEV_MODE=true" > .env
 
 # Run the server
 uvicorn main:app --reload --port 8000
@@ -113,8 +117,9 @@ Copy `.env.example` to `backend/.env`:
 
 | Variable | Default | Description |
 |---|---|---|
-| `DATABASE_URL` | `postgresql+asyncpg://zeropaste:zeropaste@localhost:5432/zeropaste` | PostgreSQL async connection string |
-| `REDIS_URL` | `redis://localhost:6379/0` | Redis connection string |
+| `DEV_MODE` | `False` | When `true`, uses SQLite + FakeRedis instead of connecting to Postgres/Redis |
+| `DATABASE_URL` | `postgresql+...` | PostgreSQL async connection string (ignored if DEV_MODE=true) |
+| `REDIS_URL` | `redis://localhost:6379/0` | Redis connection string (ignored if DEV_MODE=true) |
 | `CORS_ORIGINS` | `http://localhost:5173` | Comma-separated allowed origins |
 
 ---

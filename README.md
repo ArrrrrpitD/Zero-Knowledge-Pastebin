@@ -55,7 +55,7 @@ URL: https://zeropaste.example.com/paste/{id}#key={base64_aes_key}
 
 ```bash
 # Clone the repo
-git clone https://github.com/yourname/zeropaste.git
+git clone https://github.com/ArrrrrpitD/Zero-Knowledge-Pastebin.git
 cd zeropaste
 
 # Start infrastructure (PostgreSQL + Redis + FastAPI backend)

@@ -87,6 +87,12 @@ const CHUNK_SIZE = 10 * 1024 * 1024; // 10MB
 
 /**
  * Encrypts a File object in chunks.
+ *
+ * SECURITY: Each chunk receives a unique, cryptographically random 96-bit IV
+ * via the encrypt() call. This is critical — AES-GCM breaks catastrophically
+ * if an IV is ever reused with the same key. The IV is stored alongside each
+ * chunk's ciphertext so decryption can reconstruct each piece independently.
+ *
  * @param {CryptoKey} key
  * @param {File} file
  * @returns {Promise<{chunks: Array<{iv:string, ciphertext:string}>, fileName: string, mimeType: string, totalSize: number}>}

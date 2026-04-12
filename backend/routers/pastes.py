@@ -3,12 +3,13 @@ import uuid
 import json
 from typing import Annotated, Union
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, delete
 
 from database import get_db
 from redis_client import get_redis
+from rate_limit import limiter
 from models import Paste
 from schemas import (
     CreateTextPaste,
@@ -24,8 +25,11 @@ router = APIRouter(prefix="/api/pastes", tags=["pastes"])
 PRESENCE_CHANNEL_PREFIX = "presence:"
 
 
+
 @router.post("", response_model=PasteCreatedResponse, status_code=201)
+@limiter.limit("10/minute")
 async def create_paste(
+    request: Request,
     body: Union[CreateTextPaste, CreateFilePaste],
     db: AsyncSession = Depends(get_db),
     redis=Depends(get_redis),

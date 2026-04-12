@@ -127,8 +127,11 @@ Copy `.env.example` to `backend/.env`:
 ## 🔬 Security Model
 
 - **AES-256-GCM** provides authenticated encryption — any tampering with the ciphertext will cause decryption to fail.
+- **Fresh IVs per Chunk** protects large file uploads: each 10MB chunk generates a unique, cryptographically random 96-bit IV before encryption, completely preventing AES-GCM IV reuse attacks.
 - **The URL fragment (#key=...)** is never sent over HTTP by browsers. It exists only in the client.
+- **Content Security Policy (CSP)** handles XSS defense. Strict headers block inline scripts to prevent an attacker from executing key extraction scripts inside the browser.
 - **Burn-after-read** is handled atomically in a single DB transaction — even concurrent requests race to delete the row first.
+- **Rate limiting** via `slowapi` prevents malicious actors from spamming the database with encrypted garbage blobs.
 - **The server never logs or processes the plaintext** — it only stores and retrieves opaque base64 blobs.
 
 > ⚠️ **Note:** ZeroPaste does not protect against a malicious server operator who replaces the frontend code with a key-stealing version. For maximum security, self-host and audit the code.

@@ -176,3 +176,8 @@ Zero Knowledge Pastebin/
 ## 📄 License
 
 MIT
+
+<p align="center">
+  <br>
+  Made with ❤️ by Arpit Dwivedi
+</p>
